@@ -111,7 +111,7 @@ add topics=info,warning,error action=disk
   Firewall Logs: Logs all firewall activity for review.
   System Logs: Logs errors, warnings, and general information to the disk.
 
-Scheduling Scripts
+7. Scheduling Scripts
 
 You can schedule some scripts to run periodically, like updating blacklists or performing security checks.
 
@@ -121,3 +121,14 @@ You can schedule some scripts to run periodically, like updating blacklists or p
 add name="update_blacklist" interval=1d on-event="/ip firewall address-list remove [find list=blacklist]"
 ```
 This schedule clears the blacklist every 24 hours.
+
+8. block access to Starlink page from a particular port (like port 2) 
+Define IP addresses or DNS names for Starlink's domains (update as needed)
+```rsc
+/ip firewall layer7-protocol add name=block_starlink regexp="^.*starlink.*\$"
+/ip firewall filter add chain=forward src-port=2 protocol=tcp layer7-protocol=block_starlink action=drop comment="Block Starlink access from port 2"
+```
+
+Layer7 Protocol: This uses regular expressions to match Starlink-related DNS names.
+Filter Rule: Blocks traffic from devices connected to port 2 when attempting to access Starlink.
+This rule will need to be updated if IPs or domains change, or additional specific domains are necessary for broader blocking.
